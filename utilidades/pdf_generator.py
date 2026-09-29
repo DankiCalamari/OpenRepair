@@ -13,7 +13,7 @@ def _dibujar_texto_largo(c, x, y, texto, max_chars=80, paso=0.5 * cm):
 
 
 def generar_pdf(datos, output_path, idioma="es"):
-    """Genera un PDF A4 con resguardo arriba y etiqueta troquelada abajo."""
+    """Generate an A4 PDF with a receipt above and a detachable label below."""
     tr = translate if idioma == "en" else lambda text: text
     w, h = A4
     c = canvas.Canvas(output_path, pagesize=A4)

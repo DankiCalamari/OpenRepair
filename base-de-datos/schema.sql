@@ -4,7 +4,7 @@ CREATE DATABASE IF NOT EXISTS openrepair
 
 USE openrepair;
 
--- Tabla de usuarios (login)
+-- Users table (login)
 CREATE TABLE usuarios (
     id INT AUTO_INCREMENT PRIMARY KEY,
     nombre VARCHAR(100) NOT NULL,
@@ -14,7 +14,7 @@ CREATE TABLE usuarios (
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 
--- Tabla de los clientes
+-- Customers table
 CREATE TABLE clientes (
     id INT AUTO_INCREMENT PRIMARY KEY,
     nombre VARCHAR(100) NOT NULL,
@@ -23,7 +23,7 @@ CREATE TABLE clientes (
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 
--- Tabla de las reparaciones
+-- Repairs table
 CREATE TABLE reparaciones (
     id INT AUTO_INCREMENT PRIMARY KEY,
     codigo VARCHAR(20) NOT NULL UNIQUE,
@@ -42,13 +42,13 @@ CREATE TABLE reparaciones (
     FOREIGN KEY (cliente_id) REFERENCES clientes(id)
 );
 
--- Contador de reparaciones por año (nunca retrocede)
+-- Repair counter by year (never decreases)
 CREATE TABLE contadores (
     year INT PRIMARY KEY,
     ultimo_num INT NOT NULL DEFAULT 0
 );
 
--- Tabla del historial de estados
+-- Status history table
 CREATE TABLE historial_estados (
     id INT AUTO_INCREMENT PRIMARY KEY,
     reparacion_id INT NOT NULL,

@@ -1,4 +1,4 @@
-"""seed.py — Insertar datos de prueba en la base de datos."""
+"""seed.py — Insert sample data into the database."""
 import sys
 import os
 import mysql.connector
@@ -75,7 +75,7 @@ for i in range(1, 26):
     estado_actual = estados_completo[num_estados - 1]
 
     presupuesto = round(random.uniform(30, 200), 2) if num_estados >= 3 else None
-    # Rechazo de presupuesto: 20% de los que están en "Presupuesto enviado"
+    # Estimate rejection: 20% of repairs in "Presupuesto enviado".
     aceptado = True if num_estados >= 4 else (False if num_estados == 3 and random.random() < 0.2 else None)
     precio = presupuesto if num_estados >= 6 else None
 

@@ -1,7 +1,7 @@
-# Contexto interno — no publicar
+# Internal context — do not publish
 CLAUDE.md
 
-# Entorno y secretos
+# Environment and secrets
 .env
 .env.*
 !.env.example
@@ -15,15 +15,15 @@ venv/
 .venv/
 env/
 
-# Datos / DB local
+# Local data / database
 *.sqlite3
 *.db
 
-# Salida generada (PDFs, CSVs de prueba)
+# Generated output (PDFs, test CSVs)
 *.pdf
 *.csv
 
-# Herramientas / SO
+# Tools / OS
 .DS_Store
 .idea/
 .vscode/

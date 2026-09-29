@@ -1,5 +1,5 @@
 <svg width="790" height="170" viewBox="0 0 790 170" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="OpenRepair">
-  <!-- isotipo (chevron blanco para fondo oscuro) -->
+  <!-- symbol (white chevron for dark backgrounds) -->
   <g transform="translate(0,-10) scale(0.85)">
     <path d="M120 44 L60 100 L120 156" stroke="#FFFFFF" stroke-width="24" stroke-linecap="round" stroke-linejoin="round"/>
     <path d="M120 166 L162 90" stroke="#FFFFFF" stroke-width="24" stroke-linecap="round"/>

@@ -9,7 +9,7 @@ services:
       MARIADB_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:-rootpass}
     volumes:
       - db_data:/var/lib/mysql
-      # schema.sql se ejecuta SOLO la primera vez (volumen vacío)
+      # schema.sql runs only the first time (when the volume is empty)
       - ./base-de-datos/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql:ro
     healthcheck:
       test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]

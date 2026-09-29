@@ -72,10 +72,10 @@ def get_db():
 
 
 def ensure_admin():
-    """Crea el admin inicial en el primer arranque si la tabla de usuarios está vacía.
+    """Create the initial admin on first startup if the users table is empty.
 
-    Idempotente: no inserta nada si ya existe algún usuario. Reintenta unos
-    segundos porque la base de datos puede tardar en aceptar conexiones.
+    Idempotent: insert nothing if a user already exists. Retry for a few
+    seconds because the database may take time to accept connections.
     """
     import time
     import mysql.connector
@@ -105,7 +105,7 @@ def ensure_admin():
             db.close()
             return
         except mysql.connector.Error as e:
-            # Otro worker pudo crearlo a la vez (email es UNIQUE) o la DB aún arranca.
+            # Another worker may have created it (email is UNIQUE), or the DB is still starting.
             if getattr(e, 'errno', None) == 1062:  # ER_DUP_ENTRY
                 return
             time.sleep(1)
@@ -259,7 +259,7 @@ def nueva_entrada():
         else:
             cliente_id = cliente['id']
 
-        # Contador atómico por año para evitar códigos duplicados en concurrencia
+        # Atomic yearly counter prevents duplicate codes under concurrent requests.
         year = datetime.now().year
         cursor.execute("INSERT INTO contadores (year, ultimo_num) VALUES (%s, 1) ON DUPLICATE KEY UPDATE ultimo_num = ultimo_num + 1", (year,))
         cursor.execute("SELECT ultimo_num FROM contadores WHERE year = %s", (year,))
@@ -825,8 +825,8 @@ def eliminar_usuario(id):
     return redirect(url_for('admin_panel'))
 
 
-# Crea el admin inicial al importar (gunicorn) o al ejecutar directamente.
-# Desactivable con SEED_ADMIN=false.
+# Create the initial admin on import (gunicorn) or direct execution.
+# Disable with SEED_ADMIN=false.
 if os.getenv('SEED_ADMIN', 'true').lower() != 'false':
     ensure_admin()
 

@@ -2,19 +2,19 @@
 
 # OpenRepair
 
-**Gestor de taller de reparaciones — open-source y autohospedable.**
+**Open-source, self-hosted repair shop manager.**
 
-Clientes · reparaciones con seguimiento de estado · presupuestos · historial · búsqueda · export CSV · resguardo PDF.
+Customers · repair status tracking · estimates · history · search · CSV export · PDF receipts.
 
-`Flask` + `MariaDB` · se levanta con **un solo comando**.
+`Flask` + `MariaDB` · start with **one command**.
 
 </div>
 
 ---
 
-## Empieza en 30 segundos
+## Get started in 30 seconds
 
-> **Único requisito:** [Docker](https://www.docker.com/products/docker-desktop/) instalado.
+> **Only requirement:** [Docker](https://www.docker.com/products/docker-desktop/).
 
 ```bash
 git clone https://github.com/robertocarrascoso/OpenRepair.git
@@ -22,77 +22,79 @@ cd OpenRepair
 docker compose up -d
 ```
 
-Abre **http://localhost:8000** e inicia sesión:
+Open **http://localhost:8000** and sign in:
 
-| Email                  | Contraseña |
+| Email                  | Password   |
 |------------------------|------------|
 | `admin@openrepair.com` | `admin123` |
 
-Eso es todo. Sin editar archivos, sin pasos extra. La base de datos arranca **vacía**
-(sin datos de relleno) y el usuario admin se crea solo la primera vez.
+That's it. No files to edit or extra steps. The database starts **empty**
+(without sample data), and the admin account is created on first startup.
 
 > [!WARNING]
-> `admin123` es la contraseña por defecto y es **pública**. Cámbiala desde el panel
-> en cuanto entres, o define la tuya en `.env` **antes del primer arranque**:
+> `admin123` is the **public default password**. Change it in the admin panel
+> as soon as you sign in, or set your own in `.env` **before the first startup**:
 > ```env
-> ADMIN_EMAIL=tu@correo.com
-> ADMIN_PASSWORD=una-contraseña-fuerte
+> ADMIN_EMAIL=you@example.com
+> ADMIN_PASSWORD=use-a-strong-password
 > ```
-> Imprescindible antes de exponer la app a internet.
+> Do this before exposing the app to the internet.
 
 ---
 
-## Características
+## Features
 
-- **Roles** admin / técnico (sesiones, contraseñas con hash)
-- **Código automático** `REP-AÑO-NNNNN` por reparación
-- **Flujo de estados:** Recibido → Diagnosticado → Presupuesto → Reparando → Listo → Entregado
-- **Ficha de cliente** con historial completo y gasto total
-- **Dashboard** con métricas (pendientes, ingresos del mes, tiempo medio)
-- **Búsqueda** con filtros avanzados y paginación
-- **Exportar** a CSV y resguardo en PDF
-- **Idiomas** español e inglés: español si el navegador lo acepta; inglés en caso contrario.
-  Cambia con el botón de bandera en el acceso o la barra de navegación; la bandera muestra el idioma actual (🇺🇸 / 🇪🇸).
-  La selección también se aplica a los resguardos PDF y a los CSV.
+- **Roles:** admin and technician, with sessions and hashed passwords
+- **Automatic repair codes:** `REP-YEAR-NNNNN`
+- **Status flow:** Received → Diagnosed → Estimate sent → Estimate accepted → Repairing → Ready → Delivered
+- **Customer records:** full repair history and total spending
+- **Dashboard:** pending repairs, monthly revenue, and average turnaround time
+- **Search:** advanced filters and pagination
+- **Exports:** CSV and PDF receipts
+- **Languages:** Spanish when the browser accepts it; English otherwise.
+  Switch languages with the flag button on the sign-in page or navigation bar.
+  The flag shows the current language (🇺🇸 / 🇪🇸). The selection also applies to
+  PDF receipts and CSV exports.
 
 ---
 
-## Comandos útiles
+## Useful commands
 
 ```bash
-docker compose logs -f web    # ver logs de la app
-docker compose down           # parar (los datos persisten)
-docker compose down -v        # parar y BORRAR la base de datos
+docker compose logs -f web    # view app logs
+docker compose down           # stop; data persists
+docker compose down -v        # stop and DELETE the database
 ```
 
-### Datos de demo (opcional)
+### Sample data (optional)
 
-Para rellenar con clientes y reparaciones de ejemplo y probar la app:
+To populate the app with example customers and repairs:
 
 ```bash
 docker compose exec web python base-de-datos/seed.py
 ```
 
 > [!CAUTION]
-> El seed **borra y recrea** todos los datos cada vez. No lo uses con datos reales.
+> The seed script **deletes and recreates** all data each time. Do not run it
+> against real data.
 
 ---
 
-## Configuración
+## Configuration
 
-Todo se controla por variables de entorno en `.env` (copia `.env.example`). Todas tienen
-valores por defecto, así que `.env` es **opcional** para probar en local.
+Configure the app with environment variables in `.env` (copy `.env.example`).
+All variables have defaults, so `.env` is **optional** for a local trial.
 
-| Variable | Para qué sirve |
+| Variable | Purpose |
 |---|---|
-| `PORT` | Puerto público de la web (def. `8000`) |
-| `DB_NAME` | Nombre de la base de datos |
-| `DB_USER` / `DB_PASSWORD` | Credenciales de la app a la DB |
-| `DB_ROOT_PASSWORD` | Contraseña root de MariaDB |
-| `SECRET_KEY` | Clave de sesiones Flask (¡aleatoria!) |
-| `ADMIN_EMAIL` / `ADMIN_PASSWORD` | Admin creado en el 1er arranque |
+| `PORT` | Public web port (default: `8000`) |
+| `DB_NAME` | Database name |
+| `DB_USER` / `DB_PASSWORD` | App database credentials |
+| `DB_ROOT_PASSWORD` | MariaDB root password |
+| `SECRET_KEY` | Flask session key (use a random value) |
+| `ADMIN_EMAIL` / `ADMIN_PASSWORD` | Admin account created on first startup |
 
-Genera una `SECRET_KEY` segura:
+Generate a secure `SECRET_KEY`:
 
 ```bash
 python -c "import secrets; print(secrets.token_hex(32))"
@@ -100,33 +102,37 @@ python -c "import secrets; print(secrets.token_hex(32))"
 
 ---
 
-## Cómo funciona el stack
+## How it works
 
-- **web** — app Flask servida con `gunicorn` (3 workers).
-- **db** — MariaDB 11. El esquema `base-de-datos/schema.sql` se ejecuta solo la primera vez.
-- Los datos viven en un volumen Docker (`db_data`) y persisten entre reinicios.
-
----
-
-## Desplegar sin máquina propia (PaaS)
-
-El `Dockerfile` funciona tal cual en **Render**, **Railway** o **Fly.io**: conecta este repo,
-añade una base de datos MySQL/MariaDB gestionada y define las variables de entorno
-(`DB_HOST`, `DB_NAME`, `DB_USER`, `DB_PASSWORD`, `SECRET_KEY`, `ADMIN_PASSWORD`).
+- **web:** Flask app served by `gunicorn` with three workers.
+- **db:** MariaDB 11. `base-de-datos/schema.sql` runs only when the database volume is first created.
+- Data lives in the `db_data` Docker volume and persists across restarts.
 
 ---
 
-## Desarrollo local (sin Docker)
+## Deploy without your own server (PaaS)
+
+The `Dockerfile` can be used with **Render**, **Railway**, or **Fly.io**. Connect
+this repo, add a managed MySQL/MariaDB database, import
+`base-de-datos/schema.sql` once, and set `DB_HOST`, `DB_NAME`, `DB_USER`,
+`DB_PASSWORD`, `SECRET_KEY`, and `ADMIN_PASSWORD`.
+
+---
+
+## Local development (without Docker)
+
+Create a local MySQL/MariaDB database, import `base-de-datos/schema.sql`, and
+set its credentials in `.env` before starting the app.
 
 ```bash
 python -m venv venv && source venv/bin/activate
 pip install -r requirements.txt
-cp .env.example .env          # apunta DB_HOST a tu MySQL/MariaDB local
-python app.py                 # dev server en http://localhost:5000
+cp .env.example .env          # then set your local database credentials
+python app.py                 # dev server at http://localhost:5000
 ```
 
 ---
 
-## Licencia
+## License
 
 MIT
