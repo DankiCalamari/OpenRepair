@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% from "_macros.html" import badge_estado %}
-{% block title %}Panel de control — OpenRepair{% endblock %}
+{% block title %}{{ tr('Panel de control') }} — OpenRepair{% endblock %}
 
 {% block head %}
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -11,7 +11,7 @@
 <header class="page-intro">
     <div class="kicker">
         <span class="kicker-dot"></span>
-        <span>Panel de control</span>
+        <span>{{ tr('Panel de control') }}</span>
         <span class="kicker-sep">·</span>
         <span id="kickerDate"></span>
         <span class="kicker-sep">·</span>
@@ -20,16 +20,16 @@
 
     <div class="page-intro-row">
         <h1 class="page-title">
-            Resumen del <span class="accent">taller</span>
+            {{ tr('Resumen del') }} <span class="accent">{{ tr('taller') }}</span>
         </h1>
         <a href="{{ url_for('nueva_entrada') }}" class="btn btn-primary btn-lg btn-nueva-entrada">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-            Nueva entrada
+            {{ tr('Nueva entrada') }}
         </a>
     </div>
 
     <p class="page-intro-sub">
-        Estado operativo, distribución de cargas y actividad reciente del periodo en curso.
+        {{ tr('Estado operativo, distribución de cargas y actividad reciente del periodo en curso.') }}
     </p>
 </header>
 
@@ -38,45 +38,45 @@
 
     <div class="dashboard-main">
 
-        <section class="kpi-grid" aria-label="Indicadores clave">
+        <section class="kpi-grid" aria-label="{{ tr('Indicadores clave') }}">
             <article class="kpi">
                 <div class="kpi-head">
-                    <span class="kpi-label">En curso</span>
+                    <span class="kpi-label">{{ tr('En curso') }}</span>
                     <span class="kpi-index">01</span>
                 </div>
                 <div class="kpi-value">{{ pendientes }}</div>
-                <div class="kpi-foot">Reparaciones activas pendientes de entrega</div>
+                <div class="kpi-foot">{{ tr('Reparaciones activas pendientes de entrega') }}</div>
             </article>
 
             <article class="kpi">
                 <div class="kpi-head">
-                    <span class="kpi-label">Este mes</span>
+                    <span class="kpi-label">{{ tr('Este mes') }}</span>
                     <span class="kpi-index">02</span>
                 </div>
                 <div class="kpi-value">{{ este_mes }}</div>
-                <div class="kpi-foot">Entradas registradas en el periodo actual</div>
+                <div class="kpi-foot">{{ tr('Entradas registradas en el periodo actual') }}</div>
             </article>
 
             <article class="kpi">
                 <div class="kpi-head">
-                    <span class="kpi-label">Ingresos / mes</span>
+                    <span class="kpi-label">{{ tr('Ingresos / mes') }}</span>
                     <span class="kpi-index">03</span>
                 </div>
                 <div class="kpi-value">
                     {{ "%.0f"|format(ingresos_mes) }}<span class="unit">€</span>
                 </div>
-                <div class="kpi-foot">Facturado en reparaciones entregadas</div>
+                <div class="kpi-foot">{{ tr('Facturado en reparaciones entregadas') }}</div>
             </article>
 
             <article class="kpi">
                 <div class="kpi-head">
-                    <span class="kpi-label">Tiempo medio</span>
+                    <span class="kpi-label">{{ tr('Tiempo medio') }}</span>
                     <span class="kpi-index">04</span>
                 </div>
                 <div class="kpi-value">
-                    {{ tiempo_medio }}<span class="unit">días</span>
+                    {{ tiempo_medio }}<span class="unit">{{ tr('días') }}</span>
                 </div>
-                <div class="kpi-foot">Desde entrada hasta entrega al cliente</div>
+                <div class="kpi-foot">{{ tr('Desde entrada hasta entrega al cliente') }}</div>
             </article>
         </section>
 
@@ -84,10 +84,10 @@
         <section class="panel">
             <header class="panel-head">
                 <div>
-                    <span class="panel-eyebrow"><span class="num">§ 01</span> — Flujo operativo</span>
-                    <h2 class="panel-title">Reparaciones por estado</h2>
+                    <span class="panel-eyebrow"><span class="num">§ 01</span> {{ tr('— Flujo operativo') }}</span>
+                    <h2 class="panel-title">{{ tr('Reparaciones por estado') }}</h2>
                 </div>
-                <a href="{{ url_for('reparaciones') }}" class="link-arrow">Ver todas →</a>
+                <a href="{{ url_for('reparaciones') }}" class="link-arrow">{{ tr('Ver todas →') }}</a>
             </header>
 
             <div class="pipeline" id="pipeline"></div>
@@ -98,8 +98,8 @@
             <section class="panel">
                 <header class="panel-head">
                     <div>
-                        <span class="panel-eyebrow"><span class="num">§ 02</span> — Distribución</span>
-                        <h2 class="panel-title">Tipos de dispositivo</h2>
+                        <span class="panel-eyebrow"><span class="num">§ 02</span> {{ tr('— Distribución') }}</span>
+                        <h2 class="panel-title">{{ tr('Tipos de dispositivo') }}</h2>
                     </div>
                 </header>
                 <div class="chart-wrap">
@@ -110,8 +110,8 @@
             <section class="panel">
                 <header class="panel-head">
                     <div>
-                        <span class="panel-eyebrow"><span class="num">§ 03</span> — Carga de trabajo</span>
-                        <h2 class="panel-title">Reparaciones por estado</h2>
+                        <span class="panel-eyebrow"><span class="num">§ 03</span> {{ tr('— Carga de trabajo') }}</span>
+                        <h2 class="panel-title">{{ tr('Reparaciones por estado') }}</h2>
                     </div>
                 </header>
                 <div class="chart-wrap">
@@ -127,10 +127,10 @@
         <section class="panel panel-feed">
             <header class="panel-head">
                 <div>
-                    <span class="panel-eyebrow"><span class="num">§ 04</span> — Actividad</span>
-                    <h2 class="panel-title">Últimas entradas</h2>
+                    <span class="panel-eyebrow"><span class="num">§ 04</span> {{ tr('— Actividad') }}</span>
+                    <h2 class="panel-title">{{ tr('Últimas entradas') }}</h2>
                 </div>
-                <a href="{{ url_for('reparaciones') }}" class="link-arrow">Todas →</a>
+                <a href="{{ url_for('reparaciones') }}" class="link-arrow">{{ tr('Todas →') }}</a>
             </header>
 
             <ul class="feed-list">
@@ -143,7 +143,7 @@
                         </div>
                         <div class="feed-client">{{ rep.cliente_nombre }}</div>
                         <div class="feed-device">
-                            {{ rep.tipo_dispositivo }} <span class="text-muted">· {{ rep.marca }} {{ rep.modelo or '' }}</span>
+                            {{ tr(rep.tipo_dispositivo) }} <span class="text-muted">· {{ rep.marca }} {{ rep.modelo or '' }}</span>
                         </div>
                         <div class="feed-foot">
                             {{ badge_estado(rep.estado) }}
@@ -153,7 +153,7 @@
                 {% endfor %}
 
                 {% if ultimas|length == 0 %}
-                <li class="empty-state">Sin actividad reciente.</li>
+                <li class="empty-state">{{ tr('Sin actividad reciente.') }}</li>
                 {% endif %}
             </ul>
         </section>
@@ -167,9 +167,8 @@
 {% block scripts %}
 <script>
 (function() {
-    const meses = ['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
     const d = new Date();
-    const fecha = `${String(d.getDate()).padStart(2,'0')} ${meses[d.getMonth()]} ${d.getFullYear()}`;
+    const fecha = new Intl.DateTimeFormat(document.documentElement.lang === 'en' ? 'en-US' : 'es-ES', { day: '2-digit', month: 'short', year: 'numeric' }).format(d);
     document.getElementById('kickerDate').textContent = fecha;
 })();
 
@@ -198,7 +197,7 @@ estadosFlujo.forEach((estado, idx) => {
     cell.className = 'pipeline-cell' + (count > 0 ? ' has-count' : ' empty');
     cell.innerHTML = `
         <span class="pipeline-step">${String(idx + 1).padStart(2, '0')}</span>
-        <span class="pipeline-label">${estado}</span>
+        <span class="pipeline-label">${window.openRepairTranslate(estado)}</span>
         <span class="pipeline-count">${count}</span>
     `;
     pipeline.appendChild(cell);
@@ -227,7 +226,7 @@ reparaciones.forEach(r => {
 new Chart(document.getElementById('chartTipos'), {
     type: 'doughnut',
     data: {
-        labels: Object.keys(conteoTipos),
+        labels: Object.keys(conteoTipos).map(window.openRepairTranslate),
         datasets: [{
             data: Object.values(conteoTipos),
             backgroundColor: paletaCalida.slice(0, Object.keys(conteoTipos).length),
@@ -270,7 +269,7 @@ new Chart(document.getElementById('chartTipos'), {
 new Chart(document.getElementById('chartEstados'), {
     type: 'bar',
     data: {
-        labels: Object.keys(conteoEstados),
+        labels: Object.keys(conteoEstados).map(window.openRepairTranslate),
         datasets: [{
             data: Object.values(conteoEstados),
             backgroundColor: accent,

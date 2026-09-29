@@ -1,20 +1,20 @@
 {% extends "base.html" %}
-{% block title %}Clientes — OpenRepair{% endblock %}
+{% block title %}{{ tr('Clientes') }} — OpenRepair{% endblock %}
 
 {% block content %}
 <div class="page-header">
-    <h1>Clientes <span class="text-muted">({{ total }})</span></h1>
+    <h1>{{ tr('Clientes') }} <span class="text-muted">({{ total }})</span></h1>
 </div>
 
 <div class="table-responsive">
     <table>
         <thead>
             <tr>
-                <th>Nombre</th>
-                <th>Teléfono</th>
+                <th>{{ tr('Nombre') }}</th>
+                <th>{{ tr('Teléfono') }}</th>
                 <th>Email</th>
-                <th>Reparaciones</th>
-                <th>Alta</th>
+                <th>{{ tr('Reparaciones') }}</th>
+                <th>{{ tr('Alta') }}</th>
             </tr>
         </thead>
         <tbody>
@@ -34,13 +34,13 @@
 {% if total_pages > 1 %}
 <nav class="paginacion">
     {% if page > 1 %}
-    <a href="{{ url_for('clientes', page=page-1) }}" class="btn btn-secondary btn-sm">&laquo; Anterior</a>
+    <a href="{{ url_for('clientes', page=page-1) }}" class="btn btn-secondary btn-sm">&laquo; {{ tr('Anterior') }}</a>
     {% endif %}
 
-    <span class="paginacion-info">Página {{ page }} de {{ total_pages }}</span>
+    <span class="paginacion-info">{{ tr('Página') }} {{ page }} {{ tr('de') }} {{ total_pages }}</span>
 
     {% if page < total_pages %}
-    <a href="{{ url_for('clientes', page=page+1) }}" class="btn btn-secondary btn-sm">Siguiente &raquo;</a>
+    <a href="{{ url_for('clientes', page=page+1) }}" class="btn btn-secondary btn-sm">{{ tr('Siguiente') }} &raquo;</a>
     {% endif %}
 </nav>
 {% endif %}

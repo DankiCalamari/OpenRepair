@@ -1,18 +1,18 @@
 {% extends "base.html" %}
-{% block title %}Editar {{ cliente.nombre }} — OpenRepair{% endblock %}
+{% block title %}{{ tr('Editar') }} {{ cliente.nombre }} — OpenRepair{% endblock %}
 
 {% block content %}
-<h1>Editar cliente</h1>
+<h1>{{ tr('Editar cliente') }}</h1>
 
 <div class="card">
     <form method="POST" class="form-grid">
         <div class="form-group">
-            <label for="nombre">Nombre *</label>
+            <label for="nombre">{{ tr('Nombre *') }}</label>
             <input type="text" id="nombre" name="nombre" value="{{ cliente.nombre }}" required>
         </div>
 
         <div class="form-group">
-            <label for="telefono">Teléfono</label>
+            <label for="telefono">{{ tr('Teléfono') }}</label>
             <input type="tel" id="telefono" name="telefono" value="{{ cliente.telefono or '' }}">
         </div>
 
@@ -22,8 +22,8 @@
         </div>
 
         <div class="form-actions">
-            <button type="submit" class="btn btn-primary">Guardar cambios</button>
-            <a href="{{ url_for('detalle_cliente', id=cliente.id) }}" class="btn btn-secondary">Cancelar</a>
+            <button type="submit" class="btn btn-primary">{{ tr('Guardar cambios') }}</button>
+            <a href="{{ url_for('detalle_cliente', id=cliente.id) }}" class="btn btn-secondary">{{ tr('Cancelar') }}</a>
         </div>
     </form>
 </div>

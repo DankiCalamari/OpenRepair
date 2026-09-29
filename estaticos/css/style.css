@@ -314,6 +314,16 @@ p { color: var(--ink-2); }
     border-left: 1px solid var(--rule);
 }
 
+.language-switch { margin: 0; }
+
+.language-button {
+    width: 40px;
+    height: 40px;
+    padding: 0;
+    font-size: 1.25rem;
+    line-height: 1;
+}
+
 .theme-toggle {
     background: none;
     border: 1px solid var(--rule);
@@ -1380,6 +1390,12 @@ textarea {
     z-index: 10;
 }
 
+.login-language-switch {
+    position: fixed;
+    bottom: 1.5rem;
+    left: 1.5rem;
+}
+
 /* === 21. DASHBOARD HEADER (botón nueva entrada) === */
 
 .btn-nueva-entrada {
@@ -1467,10 +1483,17 @@ textarea {
 
     .hamburger { display: flex; }
 
+    .nav-container {
+        height: auto;
+        min-height: 68px;
+        flex-wrap: wrap;
+        padding-block: 0.5rem;
+    }
+
     .nav-links {
         display: none;
         position: absolute;
-        top: 64px;
+        top: 100%;
         left: 0;
         right: 0;
         background: var(--bg-surface);
@@ -1495,6 +1518,8 @@ textarea {
         border-left: none;
     }
 
+    .nav-container { gap: 0.75rem; padding-inline: 1rem; }
+
     .panel-row { grid-template-columns: 1fr; }
 
     .page-intro-row { flex-direction: column; align-items: flex-start; gap: 1rem; }
@@ -1511,6 +1536,7 @@ textarea {
 }
 
 @media (max-width: 540px) {
+    .nav-user-name { display: none; }
     .kpi-grid { grid-template-columns: 1fr; }
     .kpi { border-right: none; border-bottom: 1px solid var(--rule); }
     .kpi:last-child { border-bottom: none; }

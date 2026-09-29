@@ -1,5 +1,16 @@
+(() => {
 const themeToggle = document.getElementById('theme-toggle');
 const html = document.documentElement;
+const en = html.lang === 'en';
+const dataLabels = {
+    'Recibido': 'Received', 'Diagnosticado': 'Diagnosed',
+    'Presupuesto enviado': 'Estimate sent', 'Presupuesto aceptado': 'Estimate accepted',
+    'Reparando': 'Repairing', 'Esperando pieza': 'Waiting for part',
+    'Listo': 'Ready', 'Entregado': 'Delivered',
+    'Móvil': 'Mobile phone', 'Portátil': 'Laptop', 'Sobremesa': 'Desktop computer',
+    'Ordenador': 'Desktop computer', 'Consola': 'Console', 'Otro': 'Other',
+};
+window.openRepairTranslate = value => en ? (dataLabels[value] || value) : value;
 
 if (themeToggle) {
     themeToggle.addEventListener('click', () => {
@@ -33,7 +44,7 @@ if (formNuevaEntrada) {
 
         if (!telefono && !email) {
             e.preventDefault();
-            alert('Indica al menos un dato de contacto (teléfono o email).');
+            alert(en ? 'Enter at least one contact detail (phone or email).' : 'Indica al menos un dato de contacto (teléfono o email).');
         }
     });
 }
@@ -62,3 +73,4 @@ if (telefonoInput) {
         }, 300);
     });
 }
+})();

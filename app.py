@@ -3,7 +3,9 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from functools import wraps
 from config import DB_CONFIG, SECRET_KEY, ADMIN_EMAIL, ADMIN_PASSWORD, ADMIN_NOMBRE
 from utilidades.pdf_generator import generar_pdf
+from utilidades.i18n import browser_language, translate
 from datetime import datetime, date
+from urllib.parse import urlsplit
 import csv
 import io
 import os
@@ -12,6 +14,33 @@ app = Flask(__name__,
             template_folder='plantillas',
             static_folder='estaticos')
 app.secret_key = SECRET_KEY
+
+
+def tr(text):
+    return translate(text) if session.get('idioma') == 'en' else text
+
+
+app.jinja_env.globals['tr'] = tr
+
+
+@app.before_request
+def detectar_idioma():
+    if session.get('idioma') not in ('es', 'en'):
+        session['idioma'] = browser_language(request.accept_languages)
+
+
+@app.route('/idioma', methods=['POST'])
+def cambiar_idioma():
+    idioma = request.form.get('idioma')
+    if idioma in ('es', 'en'):
+        session['idioma'] = idioma
+
+    destino = request.form.get('next', '/')
+    parsed = urlsplit(destino)
+    if (not destino.startswith('/') or destino.startswith('//') or '\\' in destino
+            or any(ord(c) < 32 for c in destino) or parsed.scheme or parsed.netloc):
+        destino = url_for('dashboard') if 'user_id' in session else url_for('login')
+    return redirect(destino)
 
 
 def login_required(f):
@@ -142,7 +171,10 @@ def login():
 
 @app.route('/logout')
 def logout():
+    idioma = session.get('idioma')
     session.clear()
+    if idioma in ('es', 'en'):
+        session['idioma'] = idioma
     flash('Sesión cerrada.', 'success')
     return redirect(url_for('login'))
 
@@ -666,13 +698,10 @@ def ver_pdf(codigo):
         'fecha': row['created_at']
     }
 
-    pdf_dir = os.path.join(app.root_path, 'pdfs')
-    os.makedirs(pdf_dir, exist_ok=True)
-    pdf_path = os.path.join(pdf_dir, f'{codigo}.pdf')
-
-    generar_pdf(datos, pdf_path)
-
-    return send_file(pdf_path, as_attachment=False, download_name=f'{codigo}.pdf')
+    pdf = io.BytesIO()
+    generar_pdf(datos, pdf, session.get('idioma', 'es'))
+    pdf.seek(0)
+    return send_file(pdf, mimetype='application/pdf', as_attachment=False, download_name=f'{codigo}.pdf')
 
 
 @app.route('/reparaciones/csv')
@@ -697,18 +726,18 @@ def exportar_csv():
     output = io.StringIO()
     output.write('﻿')  # BOM para que Excel detecte UTF-8
     writer = csv.writer(output, delimiter=';')
-    writer.writerow(['Código', 'Cliente', 'Tipo dispositivo', 'Marca', 'Modelo', 'Avería', 'Estado', 'Presupuesto', 'Precio final', 'Fecha entrada'])
+    writer.writerow([tr(label) for label in ['Código', 'Cliente', 'Tipo dispositivo', 'Marca', 'Modelo', 'Avería', 'Estado', 'Presupuesto', 'Precio final', 'Fecha entrada']])
 
     for r in lista:
         fecha = r['created_at'].strftime('%d/%m/%Y') if isinstance(r['created_at'], datetime) else str(r['created_at'])
         writer.writerow([
             r['codigo'],
             r.get('cliente_nombre', ''),
-            r['tipo_dispositivo'],
+            tr(r['tipo_dispositivo']),
             r.get('marca', ''),
             r.get('modelo', ''),
             r['averia'],
-            r['estado'],
+            tr(r['estado']),
             r.get('presupuesto') or '',
             r.get('precio_final') or '',
             fecha
@@ -718,7 +747,7 @@ def exportar_csv():
     return Response(
         output.getvalue(),
         mimetype='text/csv; charset=utf-8',
-        headers={'Content-Disposition': 'attachment; filename=reparaciones.csv'}
+        headers={'Content-Disposition': f"attachment; filename={'repairs' if session.get('idioma') == 'en' else 'reparaciones'}.csv"}
     )
 
 

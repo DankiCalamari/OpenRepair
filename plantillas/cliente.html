@@ -5,28 +5,28 @@
 {% block content %}
 <div class="page-header">
     <h1>{{ cliente.nombre }}</h1>
-    <a href="{{ url_for('editar_cliente', id=cliente.id) }}" class="btn btn-secondary">Editar</a>
+    <a href="{{ url_for('editar_cliente', id=cliente.id) }}" class="btn btn-secondary">{{ tr('Editar') }}</a>
 </div>
 
 <div class="card">
-    <p>Teléfono: {{ cliente.telefono or '—' }}</p>
+    <p>{{ tr('Teléfono:') }} {{ cliente.telefono or '—' }}</p>
     <p>Email: {{ cliente.email or '—' }}</p>
-    <p>Alta: {{ cliente.created_at.strftime('%d/%m/%Y') }}</p>
-    <p>Gasto total: {{ "%.2f"|format(gasto_total) }} €</p>
-    <p>Total reparaciones: {{ reparaciones|length }}</p>
+    <p>{{ tr('Alta:') }} {{ cliente.created_at.strftime('%d/%m/%Y') }}</p>
+    <p>{{ tr('Gasto total:') }} {{ "%.2f"|format(gasto_total) }} €</p>
+    <p>{{ tr('Total reparaciones:') }} {{ reparaciones|length }}</p>
 </div>
 
-<h2>Historial de reparaciones</h2>
+<h2>{{ tr('Historial de reparaciones') }}</h2>
 <div class="table-responsive">
     <table>
         <thead>
-            <tr><th>Código</th><th>Dispositivo</th><th>Avería</th><th>Estado</th><th>Fecha</th></tr>
+            <tr><th>{{ tr('Código') }}</th><th>{{ tr('Dispositivo') }}</th><th>{{ tr('Avería') }}</th><th>{{ tr('Estado') }}</th><th>{{ tr('Fecha') }}</th></tr>
         </thead>
         <tbody>
             {% for rep in reparaciones %}
             <tr>
                 <td><a href="/reparacion/{{ rep.codigo }}">{{ rep.codigo }}</a></td>
-                <td>{{ rep.tipo_dispositivo }} {{ rep.marca }}</td>
+                <td>{{ tr(rep.tipo_dispositivo) }} {{ rep.marca }}</td>
                 <td>{{ rep.averia[:40] }}...</td>
                 <td>{{ badge_estado(rep.estado) }}</td>
                 <td>{{ rep.created_at.strftime('%d/%m/%Y') }}</td>

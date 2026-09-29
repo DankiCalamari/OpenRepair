@@ -51,6 +51,9 @@ Eso es todo. Sin editar archivos, sin pasos extra. La base de datos arranca **va
 - **Dashboard** con métricas (pendientes, ingresos del mes, tiempo medio)
 - **Búsqueda** con filtros avanzados y paginación
 - **Exportar** a CSV y resguardo en PDF
+- **Idiomas** español e inglés: español si el navegador lo acepta; inglés en caso contrario.
+  Cambia con el botón de bandera en el acceso o la barra de navegación; la bandera muestra el idioma actual (🇺🇸 / 🇪🇸).
+  La selección también se aplica a los resguardos PDF y a los CSV.
 
 ---
 
