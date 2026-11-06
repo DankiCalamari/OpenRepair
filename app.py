@@ -13,9 +13,12 @@ import csv
 import io
 import os
 
+PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
+
 app = Flask(__name__,
-            template_folder='plantillas',
-            static_folder='estaticos')
+            template_folder=os.path.join(PROJECT_ROOT, 'plantillas'),
+            static_folder=os.path.join(PROJECT_ROOT, 'estaticos'),
+            static_url_path='/estaticos')
 app.secret_key = SECRET_KEY
 
 
@@ -153,12 +156,17 @@ def login():
         email = request.form.get('email', '').strip()
         password = request.form.get('password', '')
 
-        db = get_db()
-        cursor = db.cursor(dictionary=True)
-        cursor.execute("SELECT * FROM usuarios WHERE email = %s", (email,))
-        user = cursor.fetchone()
-        cursor.close()
-        db.close()
+        try:
+            db = get_db()
+            cursor = db.cursor(dictionary=True)
+            cursor.execute("SELECT * FROM usuarios WHERE email = %s", (email,))
+            user = cursor.fetchone()
+            cursor.close()
+            db.close()
+        except Exception:
+            app.logger.exception("[OpenRepair] No se pudo conectar a la base de datos durante el login")
+            flash('La base de datos no está disponible. Inicia MariaDB/MySQL y vuelve a intentarlo.', 'error')
+            return redirect(url_for('login'))
 
         if user and check_password_hash(user['password_hash'], password):
             session['user_id'] = user['id']
@@ -899,4 +907,4 @@ if os.getenv('SEED_ADMIN', 'true').lower() != 'false':
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(host='0.0.0.0', port=int(os.getenv('PORT', '5000')), debug=True)
