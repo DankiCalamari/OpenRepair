@@ -13,9 +13,12 @@ import csv
 import io
 import os
 
+PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
+
 app = Flask(__name__,
-            template_folder='plantillas',
-            static_folder='estaticos')
+            template_folder=os.path.join(PROJECT_ROOT, 'plantillas'),
+            static_folder=os.path.join(PROJECT_ROOT, 'estaticos'),
+            static_url_path='/estaticos')
 app.secret_key = SECRET_KEY
 
 
