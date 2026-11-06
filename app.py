@@ -1,5 +1,8 @@
 from flask import Flask, render_template, request, redirect, url_for, flash, jsonify, send_file, session, Response
 from werkzeug.security import generate_password_hash, check_password_hash
+from werkzeug.utils import secure_filename
+import hashlib
+import secrets
 from functools import wraps
 from config import DB_CONFIG, SECRET_KEY, ADMIN_EMAIL, ADMIN_PASSWORD, ADMIN_NOMBRE
 from utilidades.pdf_generator import generar_pdf
@@ -823,6 +826,70 @@ def eliminar_usuario(id):
     db.close()
     flash(f'Usuario "{usuario["nombre"]}" eliminado.', 'success')
     return redirect(url_for('admin_panel'))
+
+
+@app.route('/sct/nueva-reparacion', methods=['GET', 'POST'])
+@login_required
+def sct_nueva_reparacion():
+    if request.method == 'POST':
+        nombre = request.form.get('nombre', '').strip()
+        telefono = request.form.get('telefono', '').strip()
+        email = request.form.get('email', '').strip()
+        if not nombre or not telefono and not email:
+            flash('El nombre y un contacto son obligatorios.', 'error')
+            return render_template('sct_nueva_reparacion.html')
+        db = get_db(); cur = db.cursor(dictionary=True)
+        cur.execute('SELECT id FROM clientes WHERE (email = %s AND email <> "") OR (telefono = %s AND telefono <> "") LIMIT 1', (email, telefono))
+        cliente = cur.fetchone()
+        if cliente:
+            cliente_id = cliente['id']
+            cur.execute('UPDATE clientes SET nombre=%s, apellido=%s, empresa=%s, telefono=%s, email=%s, tipo_cliente=%s, contacto_preferido=%s WHERE id=%s', (nombre, request.form.get('apellido','').strip(), request.form.get('empresa','').strip(), telefono, email, request.form.get('tipo_cliente','individual'), request.form.get('contacto_preferido','telefono'), cliente_id))
+        else:
+            cur.execute('INSERT INTO clientes (nombre, apellido, empresa, telefono, email, tipo_cliente, contacto_preferido) VALUES (%s,%s,%s,%s,%s,%s,%s)', (nombre, request.form.get('apellido','').strip(), request.form.get('empresa','').strip(), telefono, email, request.form.get('tipo_cliente','individual'), request.form.get('contacto_preferido','telefono')))
+            cliente_id = cur.lastrowid
+        codigo = 'SCT-' + secrets.token_hex(4).upper()
+        cur.execute('''INSERT INTO reparaciones (codigo, cliente_id, tipo_dispositivo, categoria_dispositivo, marca, modelo, numero_serie, color, averia, condicion, accesorios, prioridad, fecha_prevista, notas_internas, notas_cliente, estado, moneda) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,'Recibido','AUD')''', (codigo, cliente_id, request.form.get('categoria','Other electronics'), request.form.get('categoria','Other electronics'), request.form.get('marca','').strip(), request.form.get('modelo','').strip(), request.form.get('numero_serie','').strip(), request.form.get('color','').strip(), request.form.get('averia','').strip(), request.form.get('condicion','').strip(), request.form.get('accesorios','').strip(), request.form.get('prioridad','normal'), request.form.get('fecha_prevista') or None, request.form.get('notas_internas','').strip(), request.form.get('notas_cliente','').strip()))
+        rep_id = cur.lastrowid
+        cur.execute('INSERT INTO historial_estados (reparacion_id, estado, tecnico, nota) VALUES (%s,%s,%s,%s)', (rep_id, 'Recibido', session.get('user_nombre'), 'Entrada creada en SCT'))
+        db.commit(); cur.close(); db.close()
+        flash(f'Reparación {codigo} creada correctamente.', 'success')
+        return redirect(url_for('detalle_reparacion', codigo=codigo))
+    return render_template('sct_nueva_reparacion.html')
+
+
+@app.route('/sct/reparaciones')
+@login_required
+def sct_reparaciones():
+    q = request.args.get('q', '').strip(); estado = request.args.get('estado', '').strip()
+    db = get_db(); cur = db.cursor(dictionary=True)
+    clauses = []; params = []
+    if q:
+        clauses.append('(r.codigo LIKE %s OR c.nombre LIKE %s OR c.apellido LIKE %s OR c.telefono LIKE %s OR r.modelo LIKE %s)'); params.extend([f'%{q}%'] * 5)
+    if estado: clauses.append('r.estado = %s'); params.append(estado)
+    where = (' WHERE ' + ' AND '.join(clauses)) if clauses else ''
+    cur.execute(f'''SELECT r.*, c.nombre AS cliente_nombre, c.apellido, c.telefono, c.email FROM reparaciones r JOIN clientes c ON c.id=r.cliente_id{where} ORDER BY r.created_at DESC''', tuple(params)); reparaciones = cur.fetchall()
+    cur.execute('SELECT DISTINCT estado FROM reparaciones ORDER BY estado'); estados = [r['estado'] for r in cur.fetchall()]
+    cur.close(); db.close()
+    return render_template('sct_reparaciones.html', reparaciones=reparaciones, estados=estados, estado_actual=estado, q=q, total=len(reparaciones))
+
+
+@app.route('/sct/clientes')
+@login_required
+def sct_clientes():
+    q = request.args.get('q', '').strip(); db = get_db(); cur = db.cursor(dictionary=True)
+    where = 'WHERE c.nombre LIKE %s OR c.apellido LIKE %s OR c.empresa LIKE %s OR c.email LIKE %s OR c.telefono LIKE %s' if q else ''
+    params = tuple([f'%{q}%'] * 5) if q else ()
+    cur.execute(f'''SELECT c.*, COUNT(r.id) AS n_reparaciones FROM clientes c LEFT JOIN reparaciones r ON r.cliente_id=c.id {where} GROUP BY c.id ORDER BY c.created_at DESC''', params); clientes = cur.fetchall()
+    cur.close(); db.close(); return render_template('sct_clientes.html', clientes=clientes, q=q, total=len(clientes))
+
+
+@app.route('/sct/clientes/<int:id>')
+@login_required
+def sct_detalle_cliente(id):
+    db = get_db(); cur = db.cursor(dictionary=True); cur.execute('SELECT * FROM clientes WHERE id=%s', (id,)); cliente = cur.fetchone()
+    if not cliente: cur.close(); db.close(); flash('Cliente no encontrado.', 'error'); return redirect(url_for('sct_clientes'))
+    cur.execute('SELECT * FROM reparaciones WHERE cliente_id=%s ORDER BY created_at DESC', (id,)); reparaciones = cur.fetchall(); cur.close(); db.close()
+    return render_template('cliente.html', cliente=cliente, reparaciones=reparaciones)
 
 
 # Create the initial admin on import (gunicorn) or direct execution.
